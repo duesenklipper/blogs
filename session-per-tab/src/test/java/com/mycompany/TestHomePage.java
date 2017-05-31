@@ -21,9 +21,9 @@ public class TestHomePage
 	public void homepageRendersSuccessfully()
 	{
 		//start and render the test page
-		tester.startPage(PageA.class);
+		tester.startPage(LoginPage.class);
 
 		//assert rendered page class
-		tester.assertRenderedPage(PageA.class);
+		tester.assertRenderedPage(LoginPage.class);
 	}
 }

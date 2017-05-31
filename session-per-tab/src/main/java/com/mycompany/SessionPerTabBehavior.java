@@ -1,5 +1,4 @@
 package com.mycompany;
-
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -38,11 +37,14 @@ public class SessionPerTabBehavior extends Behavior
 			if (windowName == null) {
 				windowName = UUID.randomUUID().toString();
 			}
-			final String javascript = String.format("sessionStorage.setItem('%s', '%s');", WICKET_TAB_COOKIE_NAME, windowName);
+			final String javascript = String.format(
+					"sessionStorage.setItem('%s', '%s');",
+					WICKET_TAB_COOKIE_NAME, windowName);
 			response.render(OnDomReadyHeaderItem.forScript(javascript));
 		}
 		response.render(JavaScriptHeaderItem.forScript(String.format("$(window).on('beforeunload', function() {" +
-				"document.cookie = \"%1$s=\" + sessionStorage.getItem('%1$s')});", WICKET_TAB_COOKIE_NAME),
+				"document.cookie = \"%1$s=\" + sessionStorage.getItem('%1$s')});",
+				WICKET_TAB_COOKIE_NAME),
 				WICKET_TAB_COOKIE_NAME));
 	}
 }

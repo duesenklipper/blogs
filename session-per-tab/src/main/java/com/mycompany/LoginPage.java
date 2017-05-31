@@ -10,20 +10,18 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-public class PageA extends WebPage {
+public class LoginPage extends WebPage {
 	private static final long serialVersionUID = 1L;
 
-	public PageA(final PageParameters parameters) {
+	public LoginPage(final PageParameters parameters) {
 		super(parameters);
-
-		add(new BookmarkablePageLink<>("pageB", PageB.class));
 
 		AjaxLink<Void> loginLink = new AjaxLink<Void>("login") {
 			
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				((MySession)getSession()).signIn("onlyFor", "testing");
-				setResponsePage(new PageB(null));
+				setResponsePage(new HomePage(null));
 			}
 		};
 		

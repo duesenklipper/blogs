@@ -18,6 +18,9 @@ public class MySession extends AuthenticatedWebSession {
 	@Override
 	public Roles getRoles() {
 		Roles userRoles = new Roles();
+		if (isSignedIn()) {
+			userRoles.add(UserRoles.SIGNED_USER);
+		}
 		return userRoles;
 	}
 

@@ -4,7 +4,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
 
 /**
@@ -16,7 +15,7 @@ public class WicketApplication extends AuthenticatedWebApplication
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
-		return PageA.class;
+		return HomePage.class;
 	}
 
 	@Override
@@ -24,24 +23,24 @@ public class WicketApplication extends AuthenticatedWebApplication
 	{
 		super.init();
 
-		mountPage("a", PageA.class);
-		mountPage("b", PageB.class);
+		mountPage("login", LoginPage.class);
+		mountPage("home", HomePage.class);
+		mountPage("another", AnotherPage.class);
 
-		getRequestCycleListeners().add(new PageRequestHandlerTracker());
-
-		setSessionStoreProvider(SessionPerTabHttpSessionStore::new);
-
-		getComponentInstantiationListeners().add(component -> {
-			if (component instanceof Page) {
-				component.add(new SessionPerTabBehavior());
-			}
-		});
+//		getRequestCycleListeners().add(new PageRequestHandlerTracker());
+//
+//		setSessionStoreProvider(SessionPerTabHttpSessionStore::new);
+//
+//		getComponentInstantiationListeners().add(component -> {
+//			if (component instanceof Page) {
+//				component.add(new SessionPerTabBehavior());
+//			}
+//		});
 	}
 
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {
-		// TODO Auto-generated method stub
-		return null;
+		return LoginPage.class;
 	}
 
 	@Override
