@@ -27,15 +27,15 @@ public class WicketApplication extends AuthenticatedWebApplication
 		mountPage("home", HomePage.class);
 		mountPage("another", AnotherPage.class);
 
-//		getRequestCycleListeners().add(new PageRequestHandlerTracker());
-//
-//		setSessionStoreProvider(SessionPerTabHttpSessionStore::new);
-//
-//		getComponentInstantiationListeners().add(component -> {
-//			if (component instanceof Page) {
-//				component.add(new SessionPerTabBehavior());
-//			}
-//		});
+		getRequestCycleListeners().add(new PageRequestHandlerTracker());
+
+		setSessionStoreProvider(SessionPerTabHttpSessionStore::new);
+
+		getComponentInstantiationListeners().add(component -> {
+			if (component instanceof Page) {
+				component.add(new SessionPerTabBehavior());
+			}
+		});
 	}
 
 	@Override
