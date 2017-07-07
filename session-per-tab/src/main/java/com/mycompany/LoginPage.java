@@ -16,6 +16,8 @@ public class LoginPage extends WebPage {
 	public LoginPage(final PageParameters parameters) {
 		super(parameters);
 
+		add(new BookmarkablePageLink<>("pageB", HomePage.class));
+
 		AjaxLink<Void> loginLink = new AjaxLink<Void>("login") {
 			
 			@Override

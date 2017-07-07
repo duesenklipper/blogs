@@ -1,10 +1,9 @@
 package com.mycompany;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
+import org.apache.wicket.request.IRequestMapper;
 
 /**
  * Application object for your web application.
@@ -23,19 +22,15 @@ public class WicketApplication extends AuthenticatedWebApplication
 	{
 		super.init();
 
-		mountPage("login", LoginPage.class);
-		mountPage("home", HomePage.class);
-		mountPage("another", AnotherPage.class);
+		mountPage("a", LoginPage.class);
+		mountPage("b", HomePage.class);
 
-		getRequestCycleListeners().add(new PageRequestHandlerTracker());
+		setSessionStoreProvider(MultiplexingHttpSessionStore::new);
 
-		setSessionStoreProvider(SessionPerTabHttpSessionStore::new);
+		getRequestCycleListeners().add(new SessionCleanupRequestCycleListener());
 
-		getComponentInstantiationListeners().add(component -> {
-			if (component instanceof Page) {
-				component.add(new SessionPerTabBehavior());
-			}
-		});
+		IRequestMapper original = getRootRequestMapper();
+		setRootRequestMapper(new SessionMultiplexingRequestMapper(original));
 	}
 
 	@Override
