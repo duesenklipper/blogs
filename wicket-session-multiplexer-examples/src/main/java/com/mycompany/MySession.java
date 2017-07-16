@@ -16,17 +16,28 @@
  */
 package com.mycompany;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.session.ISessionStore;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.request.Request;
 
-public class SessionCleanupRequestCycleListener extends AbstractRequestCycleListener {
-	@Override
-	public void onEndRequest(RequestCycle cycle) {
-		ISessionStore store = Application.get().getSessionStore();
-		if (store instanceof MultiplexingHttpSessionStore) {
-			((MultiplexingHttpSessionStore) store).removeInactiveSessions(cycle.getRequest());
-		}
+public class MySession extends AuthenticatedWebSession {
+
+	public MySession(Request request) {
+		super(request);
 	}
+
+	@Override
+	protected boolean authenticate(String userEMail, String password) {
+		return true;
+	}
+
+	@Override
+	public Roles getRoles() {
+		Roles userRoles = new Roles();
+		if (isSignedIn()) {
+			userRoles.add(UserRoles.SIGNED_USER);
+		}
+		return userRoles;
+	}
+
 }
