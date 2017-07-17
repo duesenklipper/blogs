@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -31,12 +31,13 @@ import org.apache.wicket.session.HttpSessionStore;
 /**
  *
  */
-public class MultiplexingHttpSessionStore extends HttpSessionStore
+class MultiplexingHttpSessionStore extends HttpSessionStore
 {
-	public static final MetaDataKey<String> WICKET_SESSION_NAME_KEY = new MetaDataKey<String>()
+	static final MetaDataKey<String> WICKET_SESSION_NAME_KEY = new MetaDataKey<String>()
 	{
 	};
-	public static final MetaDataKey<Long> WICKET_SESSION_LAST_ACCESS_KEY = new MetaDataKey<Long>() {
+	private static final MetaDataKey<Long> WICKET_SESSION_LAST_ACCESS_KEY = new MetaDataKey<Long>()
+	{
 	};
 
 	private static final String WICKET_SESSIONS_SET_KEY = "WICKET_SESSIONS_SET_KEY";
@@ -44,9 +45,10 @@ public class MultiplexingHttpSessionStore extends HttpSessionStore
 	@Override
 	protected Session getWicketSession(Request request)
 	{
-		String sessionName = getWicketSessionName(request);
-		Session session = (Session) getWicketSessions(request).get(sessionName);
-		if (session != null) {
+		String sessionName = getWicketSessionName();
+		Session session = getWicketSessions(request).get(sessionName);
+		if (session != null)
+		{
 			session.setMetaData(WICKET_SESSION_LAST_ACCESS_KEY, System.currentTimeMillis());
 		}
 		return session;
@@ -55,42 +57,51 @@ public class MultiplexingHttpSessionStore extends HttpSessionStore
 	@Override
 	protected void setWicketSession(Request request, Session session)
 	{
-		final String wicketSessionName = getWicketSessionName(request);
+		final String wicketSessionName = getWicketSessionName();
 		getWicketSessions(request).put(wicketSessionName, session);
 	}
 
-	private String getWicketSessionName(final Request request) {
+	private String getWicketSessionName()
+	{
 		final RequestCycle cycle = RequestCycle.get();
 		String wicketSessionName = cycle.getMetaData(WICKET_SESSION_NAME_KEY);
-		if (wicketSessionName == null || wicketSessionName.trim().length() == 0) {
+		if (wicketSessionName == null || wicketSessionName.trim().length() == 0)
+		{
 			wicketSessionName = newWicketSessionName();
 			cycle.setMetaData(WICKET_SESSION_NAME_KEY, wicketSessionName);
 		}
 		return wicketSessionName;
 	}
 
-	static String newWicketSessionName() {
+	static String newWicketSessionName()
+	{
 		return UUID.randomUUID().toString();
 	}
 
-	private Map<String, Session> getWicketSessions(Request req) {
-		Map<String, Session> wicketSessions = (Map<String, Session>) getAttribute(req, WICKET_SESSIONS_SET_KEY);
-		if (wicketSessions == null) {
+	private Map<String, Session> getWicketSessions(Request req)
+	{
+		@SuppressWarnings("unchecked") Map<String, Session> wicketSessions = (Map<String, Session>) getAttribute(req, WICKET_SESSIONS_SET_KEY);
+		if (wicketSessions == null)
+		{
 			wicketSessions = new ConcurrentHashMap<>();
 			setAttribute(req, WICKET_SESSIONS_SET_KEY, (Serializable) wicketSessions);
 		}
 		return wicketSessions;
 	}
 
-	void removeInactiveSessions(Request req) {
+	void removeInactiveSessions(Request req)
+	{
 		long maxInactiveIntervalInMillis = getHttpServletRequest(req).getSession().getMaxInactiveInterval() * 1000;
 		long currentTime = System.currentTimeMillis();
 		Iterator<Session> wicketSessions = getWicketSessions(req).values().iterator();
-		while (wicketSessions.hasNext()) {
+		while (wicketSessions.hasNext())
+		{
 			Session ws = wicketSessions.next();
 			Long lastAccess = ws.getMetaData(WICKET_SESSION_LAST_ACCESS_KEY);
-			if (lastAccess != null) {
-				if (currentTime - maxInactiveIntervalInMillis > lastAccess) {
+			if (lastAccess != null)
+			{
+				if (currentTime - maxInactiveIntervalInMillis > lastAccess)
+				{
 					wicketSessions.remove();
 				}
 			}

@@ -14,20 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.Application;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.session.ISessionStore;
 
-public class RedirectToNewSessionException extends RestartResponseException {
-
-	public <C extends Page> RedirectToNewSessionException(Class<C> pageClass) {
-		this(pageClass, new PageParameters());
-	}
-
-	public <C extends Page> RedirectToNewSessionException(Class<C> pageClass, PageParameters params) {
-		super(pageClass, params.add(SessionMultiplexingRequestMapper.WSN_PARAMETER_NAME,
-				MultiplexingHttpSessionStore.newWicketSessionName()));
+class SessionCleanupRequestCycleListener extends AbstractRequestCycleListener {
+	@Override
+	public void onEndRequest(RequestCycle cycle) {
+		ISessionStore store = Application.get().getSessionStore();
+		if (store instanceof MultiplexingHttpSessionStore) {
+			((MultiplexingHttpSessionStore) store).removeInactiveSessions(cycle.getRequest());
+		}
 	}
 }

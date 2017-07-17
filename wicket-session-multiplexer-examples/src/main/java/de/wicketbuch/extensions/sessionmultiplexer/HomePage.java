@@ -14,33 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-public class LoginPage extends WebPage {
+@AuthorizeInstantiation(UserRoles.SIGNED_USER)
+public class HomePage extends WebPage {
 	private static final long serialVersionUID = 1L;
 
-	public LoginPage(final PageParameters parameters) {
+	public HomePage(final PageParameters parameters) {
 		super(parameters);
 
-		add(new BookmarkablePageLink<>("pageB", HomePage.class));
+		add(new Link<Void>("pageB") {
 
-		AjaxLink<Void> loginLink = new AjaxLink<Void>("login") {
-			
+			@Override
+			public void onClick() {
+				throw new RedirectToNewSessionException(HomePage.class);
+			}
+		});
+
+		add(new BookmarkablePageLink<>("bookmarkable", HomePage.class));
+
+		add(new AjaxLink<Void>("logout") {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				((MySession)getSession()).signIn("onlyFor", "testing");
+				((MySession)getSession()).invalidate();
 				setResponsePage(new HomePage(null));
 			}
-		};
-		
-		add(loginLink);
-		
+		});
+
 		setStatelessHint(false);
-    }
+	}
 }

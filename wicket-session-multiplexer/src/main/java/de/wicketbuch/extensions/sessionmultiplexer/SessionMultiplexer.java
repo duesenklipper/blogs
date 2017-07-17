@@ -14,19 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
-import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.session.ISessionStore;
+import org.apache.wicket.util.IProvider;
 
-public class SessionCleanupRequestCycleListener extends AbstractRequestCycleListener {
-	@Override
-	public void onEndRequest(RequestCycle cycle) {
-		ISessionStore store = Application.get().getSessionStore();
-		if (store instanceof MultiplexingHttpSessionStore) {
-			((MultiplexingHttpSessionStore) store).removeInactiveSessions(cycle.getRequest());
-		}
+public class SessionMultiplexer
+{
+	public static void configure(WebApplication app)
+	{
+		app.setSessionStoreProvider(new IProvider<ISessionStore>()
+		{
+			@Override
+			public ISessionStore get()
+			{
+				return new MultiplexingHttpSessionStore();
+			}
+		});
+
+		app.getRequestCycleListeners().add(new SessionCleanupRequestCycleListener());
+
+		IRequestMapper original = app.getRootRequestMapper();
+		app.setRootRequestMapper(new SessionMultiplexingRequestMapper(original));
 	}
 }

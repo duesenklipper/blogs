@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
@@ -24,11 +24,11 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.IRequestMapperDelegate;
 import org.apache.wicket.util.string.StringValue;
 
-public class SessionMultiplexingRequestMapper implements IRequestMapperDelegate {
+class SessionMultiplexingRequestMapper implements IRequestMapperDelegate {
 	static final String WSN_PARAMETER_NAME = "__wsn";
 	private final IRequestMapper delegate;
 
-	public SessionMultiplexingRequestMapper(IRequestMapper delegate) {
+	SessionMultiplexingRequestMapper(IRequestMapper delegate) {
 		this.delegate = delegate;
 	}
 
@@ -55,8 +55,7 @@ public class SessionMultiplexingRequestMapper implements IRequestMapperDelegate 
 		if (!wsnValue.isEmpty()) {
 			RequestCycle.get().setMetaData(MultiplexingHttpSessionStore.WICKET_SESSION_NAME_KEY, wsnValue.toString());
 		}
-		IRequestHandler handler = delegate.mapRequest(req);
-		return handler;
+		return delegate.mapRequest(req);
 	}
 
 	@Override

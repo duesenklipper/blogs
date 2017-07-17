@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany;
+package de.wicketbuch.extensions.sessionmultiplexer;
 
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -43,19 +43,6 @@ public class WicketApplication extends AuthenticatedWebApplication
 		mountPage("a", LoginPage.class);
 		mountPage("b", HomePage.class);
 
-		setSessionStoreProvider(new IProvider<ISessionStore>()
-		{
-			@Override
-			public ISessionStore get()
-			{
-				return new MultiplexingHttpSessionStore();
-			}
-		});
-
-		getRequestCycleListeners().add(new SessionCleanupRequestCycleListener());
-
-		IRequestMapper original = getRootRequestMapper();
-		setRootRequestMapper(new SessionMultiplexingRequestMapper(original));
 	}
 
 	@Override
