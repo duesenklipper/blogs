@@ -16,41 +16,48 @@
  */
 package de.wicketbuch.extensions.sessionmultiplexer;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.Model;
 
-@AuthorizeInstantiation(UserRoles.SIGNED_USER)
 public class HomePage extends WebPage {
-	private static final long serialVersionUID = 1L;
 
-	public HomePage(final PageParameters parameters) {
-		super(parameters);
-
-		add(new Link<Void>("pageB") {
+	public HomePage() {
+		super();
+		this.add(new Label("output", new AbstractReadOnlyModel<String>()
+		{
+			@Override
+			public String getObject()
+			{
+				return MySession.get().getMyValue();
+			}
+		}));
+		Form<Void> form = new Form<Void>("form");
+		this.add(form);
+		form.add(new TextField<String>("input", new Model<String>() {
+			@Override
+			public String getObject()
+			{
+				return MySession.get().getMyValue();
+			}
 
 			@Override
-			public void onClick() {
-				throw new RedirectToNewSessionException(HomePage.class);
+			public void setObject(String object)
+			{
+				MySession.get().setMyValue(object);
 			}
-		});
-
-		add(new BookmarkablePageLink<>("bookmarkable", HomePage.class));
-
-		add(new AjaxLink<Void>("logout") {
-			private static final long serialVersionUID = 1L;
-
+		}));
+		this.add(new Link<Void>("newSession")
+		{
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				((MySession)getSession()).invalidate();
-				setResponsePage(new HomePage(null));
+			public void onClick()
+			{
+				SessionMultiplexer.launchNewSessionWithPage(HomePage.class);
 			}
 		});
-
-		setStatelessHint(false);
 	}
 }

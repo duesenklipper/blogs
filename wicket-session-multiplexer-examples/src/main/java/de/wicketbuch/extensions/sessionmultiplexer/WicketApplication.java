@@ -16,18 +16,17 @@
  */
 package de.wicketbuch.extensions.sessionmultiplexer;
 
-import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
-import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.request.IRequestMapper;
-import org.apache.wicket.session.ISessionStore;
-import org.apache.wicket.util.IProvider;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 
 /**
  * Application object for your web application.
  * If you want to run this application without deploying, run the Start class.
  */
-public class WicketApplication extends AuthenticatedWebApplication
+public class WicketApplication extends WebApplication
 {
 	@Override
 	public Class<? extends WebPage> getHomePage()
@@ -39,21 +38,12 @@ public class WicketApplication extends AuthenticatedWebApplication
 	public void init()
 	{
 		super.init();
-
-		mountPage("a", LoginPage.class);
-		mountPage("b", HomePage.class);
-
+		SessionMultiplexer.configure(this);
 	}
 
 	@Override
-	protected Class<? extends WebPage> getSignInPageClass() {
-		return LoginPage.class;
+	public Session newSession(Request request, Response response)
+	{
+		return new MySession(request);
 	}
-
-	@Override
-	protected Class<? extends AbstractAuthenticatedWebSession> getWebSessionClass() {
-		return MySession.class;
-	}
-
-
 }

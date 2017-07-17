@@ -16,28 +16,30 @@
  */
 package de.wicketbuch.extensions.sessionmultiplexer;
 
-import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
-import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.Session;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 
-public class MySession extends AuthenticatedWebSession {
+public class MySession extends WebSession
+{
+	private String myValue;
 
-	public MySession(Request request) {
+	public MySession(Request request)
+	{
 		super(request);
 	}
 
-	@Override
-	protected boolean authenticate(String userEMail, String password) {
-		return true;
+	public String getMyValue()
+	{
+		return myValue;
 	}
 
-	@Override
-	public Roles getRoles() {
-		Roles userRoles = new Roles();
-		if (isSignedIn()) {
-			userRoles.add(UserRoles.SIGNED_USER);
-		}
-		return userRoles;
+	public void setMyValue(String myValue)
+	{
+		this.myValue = myValue;
 	}
 
+	public static MySession get() {
+		return (MySession) Session.get();
+	}
 }

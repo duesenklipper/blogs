@@ -16,8 +16,10 @@
  */
 package de.wicketbuch.extensions.sessionmultiplexer;
 
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.session.ISessionStore;
 import org.apache.wicket.util.IProvider;
 
@@ -38,5 +40,15 @@ public class SessionMultiplexer
 
 		IRequestMapper original = app.getRootRequestMapper();
 		app.setRootRequestMapper(new SessionMultiplexingRequestMapper(original));
+	}
+
+	public static void launchNewSessionWithPage(Class<? extends WebPage> targetPageClass)
+	{
+		throw new RedirectToNewSessionException(targetPageClass);
+	}
+
+	public static void launchNewSessionWithPage(Class<? extends WebPage> targetPageClass, PageParameters params)
+	{
+		throw new RedirectToNewSessionException(targetPageClass, params);
 	}
 }
